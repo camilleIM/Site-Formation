@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Documentation — Titre de la page</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- Sidebar -->
+      <nav id="sidebar-container"></nav>
+
+      <!-- Contenu principal -->
+      <main>
+        <div class="topbar">
+          <div class="breadcrumbs">Documentation / Section</div>
+          <div class="actions">
+            <button id="exportPdfBtn">📄 Exporter en PDF</button>
+          </div>
+        </div>
+
+        <!-- Zone de contenu -->
+        <div class="texte">
+          <h1>Titre principal</h1>
+
+          <h2>Sous-titre</h2>
+          <p>
+            Contenu de la page. Tu peux écrire ton texte ici, ajouter des
+            images, vidéos, listes, procédures, etc.
+          </p>
+
+          <h3>Sous-section</h3>
+          <ul>
+            <li>Point important</li>
+            <li>Autre point</li>
+          </ul>
+        </div>
+      </main>
+    </div>
+
+    <!-- Chargement de la sidebar -->
+    <script>
+      fetch("sidebar.html")
+        .then((response) => response.text())
+        .then((html) => {
+          document.getElementById("sidebar-container").innerHTML = html;
+          initCollapsers();
+        });
+
+      function initCollapsers() {
+        document.querySelectorAll(".collapser").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const target = document.getElementById(btn.dataset.target);
+            const chev = btn.querySelector(".chev");
+
+            document.querySelectorAll(".submenu").forEach((menu) => {
+              if (menu !== target) {
+                menu.hidden = true;
+                menu.classList.remove("open");
+                menu.parentElement
+                  .querySelector(".chev")
+                  ?.classList.remove("open");
+              }
+            });
+
+            target.hidden = !target.hidden;
+            target.classList.toggle("open");
+            chev.classList.toggle("open");
+          });
+        });
+      }
+    </script>
+
+    <!-- Export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+      document.getElementById("exportPdfBtn").addEventListener("click", () => {
+        html2pdf()
+          .from(document.querySelector("main"))
+          .set({
+            margin: 0.5,
+            filename: document.title.replace(/\s+/g, "_") + ".pdf",
+            html2canvas: { scale: 2 },
+            jsPDF: { format: "a4", orientation: "portrait" },
+          })
+          .save();
+      });
+    </script>
+  </body>
+</html>

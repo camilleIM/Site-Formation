@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Groupe Portance — Documentation</title>
+
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div class="app">
+      <nav id="sidebar-container"></nav>
+
+      <main>
+        <div class="topbar">
+          <div class="breadcrumbs">Accueil / Documentation</div>
+          <div class="actions">
+            <button id="exportPdfBtn">📄 Exporter en PDF</button>
+          </div>
+        </div>
+
+        <div class="hero">
+          <div class="card">
+            <h3>Bienvenue dans la documentation</h3>
+            <p class="meta">
+              Procédures, fiches de poste, plans des quais et informations
+              utiles au fonctionnement de la compagnie maritime.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Raccourcis</h3>
+            <ul class="list">
+              <li><strong>Numéros importants</strong></li>
+              <li><strong>Fiches de poste</strong></li>
+              <li><strong>Quais & plans</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <section class="grid">
+          <div class="card">
+            <div class="section-title">Histoire & infos générales</div>
+            <p class="meta">Historique, valeurs et structure.</p>
+          </div>
+
+          <div class="card">
+            <div class="section-title">Services & opérations</div>
+            <ul class="list">
+              <li>Navettes</li>
+              <li>Privatisations</li>
+              <li>Croisiéristes</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="section-title">Sécurité & procédures</div>
+            <ul class="list">
+              <li>Sécurité passagers</li>
+              <li>Secourisme</li>
+              <li>Procédures internes</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="section-title">Zones & cartes</div>
+            <ul class="list">
+              <li>Cartes</li>
+              <li>Zones réglementées</li>
+              <li>Ports & quais</li>
+            </ul>
+          </div>
+        </section>
+
+        <footer>© Groupe Portance — Documentation interne</footer>
+      </main>
+    </div>
+
+    <!-- Sidebar -->
+    <script>
+      fetch("sidebar.html")
+        .then((r) => r.text())
+        .then((html) => {
+          document.getElementById("sidebar-container").innerHTML = html;
+          initCollapsers();
+        });
+
+      function initCollapsers() {
+        document.querySelectorAll(".collapser").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const target = document.getElementById(btn.dataset.target);
+            const chev = btn.querySelector(".chev");
+
+            // Parent <ul> (niveau actuel)
+            const parentMenu = btn.closest("ul");
+
+            // Fermer uniquement les sous-menus frères (même niveau)
+            parentMenu
+              .querySelectorAll(":scope > li > .submenu")
+              .forEach((menu) => {
+                if (menu !== target) {
+                  menu.hidden = true;
+                  menu.classList.remove("open");
+                  menu.parentElement
+                    .querySelector(".chev")
+                    ?.classList.remove("open");
+                }
+              });
+
+            // Toggle du menu cliqué
+            target.hidden = !target.hidden;
+            target.classList.toggle("open");
+            chev.classList.toggle("open");
+          });
+        });
+      }
+    </script>
+
+    <!-- Export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+      document.getElementById("exportPdfBtn").addEventListener("click", () => {
+        html2pdf()
+          .from(document.querySelector("main"))
+          .set({
+            margin: 0.5,
+            filename: document.title.replace(/\s+/g, "_") + ".pdf",
+            html2canvas: { scale: 2 },
+            jsPDF: { format: "a4" },
+          })
+          .save();
+      });
+    </script>
+  </body>
+</html>
